@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import FoodManager.FoodManager;
+
 import view.OrderManager;
 
 public class MainMenu extends JFrame {
@@ -43,10 +44,17 @@ public class MainMenu extends JFrame {
     new OrderManager().setVisible(true);
 
 });
+        JButton btnUser = new JButton("Quản lý người dùng");
+       btnUser.addActionListener(e -> {
+
+    new UserManager().setVisible(true);
+
+});
         JButton btnLogout = new JButton("Đăng xuất");
 
         styleMenu(btnHome);
         styleMenu(btnFood);
+        styleMenu(btnUser);
         styleMenu(btnOrder);
         styleMenu(btnLogout);
         
@@ -59,6 +67,7 @@ btnFood.addActionListener(e -> {
         
         sidebar.add(btnHome);
         sidebar.add(btnFood);
+        sidebar.add(btnUser);
         sidebar.add(btnOrder);
         sidebar.add(btnLogout);
 

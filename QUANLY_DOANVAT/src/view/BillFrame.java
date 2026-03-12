@@ -2,6 +2,7 @@ package view;
 
 import javax.swing.*;
 import java.awt.*;
+import java.text.DecimalFormat;
 
 public class BillFrame extends JFrame {
 
@@ -14,15 +15,17 @@ public class BillFrame extends JFrame {
         JTextArea bill = new JTextArea();
         bill.setFont(new Font("Arial", Font.PLAIN, 16));
 
-        bill.setText(
-                "=========== BILL ==========\n\n" +
-                "Tên món: " + tenMon + "\n" +
-                "Số lượng: " + soLuong + "\n" +
-                "Đơn giá: " + donGia + " VND\n" +
-                "-------------------------\n" +
-                "Tổng tiền: " + thanhTien + " VND\n\n" +
-                "Cảm ơn quý khách!"
-        );
+        DecimalFormat df = new DecimalFormat("#,###");
+
+bill.setText(
+        "=========== BILL ==========\n\n" +
+        "Tên món: " + tenMon + "\n" +
+        "Số lượng: " + soLuong + "\n" +
+        "Đơn giá: " + df.format(donGia) + " đ\n" +
+        "-------------------------\n" +
+        "Tổng tiền: " + df.format(thanhTien) + " đ\n\n" +
+        "Cảm ơn quý khách!"
+);
 
         bill.setEditable(false);
 

@@ -5,6 +5,10 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.text.DecimalFormat;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+
 
 public class OrderDetail extends JFrame {
 
@@ -12,12 +16,13 @@ public class OrderDetail extends JFrame {
     DefaultTableModel model;
     JLabel lblTotal;
 
-    int soLuong;
-    int tongTien;
-    String tenMon;
+    int orderId;   // ⭐ THÊM
+int soLuong;
+int tongTien;
+String tenMon;
 
     public OrderDetail(int orderId, String tenMon, int soLuong, int tongTien){
-
+        this.orderId = orderId;
         this.tenMon = tenMon;
         this.soLuong = soLuong;
         this.tongTien = tongTien;
@@ -67,7 +72,9 @@ public class OrderDetail extends JFrame {
         bottom.setBackground(pink);
         bottom.setBorder(BorderFactory.createEmptyBorder(10,20,20,20));
 
-        lblTotal = new JLabel("Tổng tiền: " + tongTien + " VNĐ");
+        DecimalFormat df = new DecimalFormat("#,###");
+
+lblTotal = new JLabel("Tổng tiền: " + df.format(tongTien) + " đ");
         lblTotal.setFont(new Font("Segoe UI",Font.BOLD,18));
         lblTotal.setForeground(new Color(200,0,90));
 
@@ -87,11 +94,13 @@ public class OrderDetail extends JFrame {
         // sự kiện thanh toán
 btnPay.addActionListener(e -> {
 
+    saveOrderDetail();   // ⭐ lưu MySQL
+
     JOptionPane.showMessageDialog(this,"Thanh toán thành công!");
 
-    showBill(); // mở hóa đơn
+    showBill();
 
-        });
+});
 
         // ===== NÚT ĐÓNG =====
         JButton btnClose = new JButton("Đóng");
@@ -116,16 +125,45 @@ btnPay.addActionListener(e -> {
 
     }
 
-    void addFood(int id,String name,int qty,int price){
+   void addFood(int id,String name,int qty,int price){
 
-        int total = qty*price;
+    int total = qty*price;
 
-        model.addRow(new Object[]{
-                id,name,qty,price,total
-        });
+    DecimalFormat df = new DecimalFormat("#,###");
 
+    model.addRow(new Object[]{
+            id,
+            name,
+            qty,
+            df.format(price) + " đ",
+            df.format(total) + " đ"
+    });
+}
+
+   // ⭐ HÀM MỚI (ĐẶT NGOÀI addFood)
+void saveOrderDetail(){
+
+    try{
+
+        Connection conn = database.DBConnection.getConnection();
+
+        String sql = "INSERT INTO chitietdonhang(id_donhang,id_monan,so_luong,thanh_tien) VALUES (?,?,?,?)";
+
+        PreparedStatement ps = conn.prepareStatement(sql);
+
+        ps.setInt(1, orderId);
+        ps.setInt(2, 1);
+        ps.setInt(3, soLuong);
+        ps.setDouble(4, tongTien);
+
+        ps.executeUpdate();
+
+    }catch(Exception e){
+        e.printStackTrace();
     }
 
+}
+   
     // ===== HÀM HIỂN BILL =====
     void showBill(){
 
@@ -157,9 +195,11 @@ btnPay.addActionListener(e -> {
 
     int donGia = tongTien/soLuong;
 
-    Object[][] data = {
-            {tenMon,soLuong,donGia,tongTien}
-    };
+    DecimalFormat df = new DecimalFormat("#,###");
+
+Object[][] data = {
+        {tenMon,soLuong,df.format(donGia) + " đ",df.format(tongTien) + " đ"}
+};
 
     JTable billTable = new JTable(data,column);
 
@@ -177,7 +217,8 @@ btnPay.addActionListener(e -> {
 
     JLabel code = new JLabel("Mã đơn hàng: "+orderCode);
     JLabel date = new JLabel("Thời gian: "+time);
-    JLabel total = new JLabel("Tổng tiền: "+tongTien+" VNĐ");
+
+    JLabel total = new JLabel("Tổng tiền: "+df.format(tongTien)+" đ");
 
     code.setFont(new Font("Segoe UI",Font.BOLD,14));
     date.setFont(new Font("Segoe UI",Font.PLAIN,14));

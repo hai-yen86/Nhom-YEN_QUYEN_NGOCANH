@@ -5,6 +5,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
+import java.text.DecimalFormat;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -237,14 +238,17 @@ add(splitPane,BorderLayout.CENTER);
                     resizedIcon = null;
                 }
 
-                model.addRow(new Object[]{
-                        rs.getInt("id"),
-                        resizedIcon,
-                        rs.getString("ten_mon"),
-                        rs.getDouble("gia"),
-                        rs.getInt("so_luong"),
-                        rs.getInt("id_loai")==1?"Đồ uống":"Ăn vặt"
-                });
+                double gia = rs.getDouble("gia");
+DecimalFormat df = new DecimalFormat("#,###");
+
+model.addRow(new Object[]{
+        rs.getInt("id"),
+        resizedIcon,
+        rs.getString("ten_mon"),
+        df.format(gia) + " đ",
+        rs.getInt("so_luong"),
+        rs.getInt("id_loai")==1?"Đồ uống":"Ăn vặt"
+});
 
             }
 
@@ -266,7 +270,8 @@ add(splitPane,BorderLayout.CENTER);
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setString(1,txtTenMon.getText());
-            ps.setDouble(2,Double.parseDouble(txtGia.getText()));
+            String giaText = txtGia.getText().replace("đ","").replace(",","").trim();
+ps.setDouble(2,Double.parseDouble(giaText));
             ps.setInt(3,Integer.parseInt(txtSoLuong.getText()));
             ps.setInt(4,cbLoai.getSelectedIndex()+1);
             ps.setString(5,selectedImage);
@@ -332,7 +337,8 @@ add(splitPane,BorderLayout.CENTER);
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setString(1,txtTenMon.getText());
-            ps.setDouble(2,Double.parseDouble(txtGia.getText()));
+            String giaText = txtGia.getText().replace("đ","").replace(",","").trim();
+ps.setDouble(2,Double.parseDouble(giaText));
             ps.setInt(3,Integer.parseInt(txtSoLuong.getText()));
             ps.setInt(4,cbLoai.getSelectedIndex()+1);
             ps.setString(5,selectedImage);
@@ -385,14 +391,17 @@ add(splitPane,BorderLayout.CENTER);
 
                 }
 
-                model.addRow(new Object[]{
-                        rs.getInt("id"),
-                        icon,
-                        rs.getString("ten_mon"),
-                        rs.getDouble("gia"),
-                        rs.getInt("so_luong"),
-                        rs.getInt("id_loai")==1?"Đồ uống":"Ăn vặt"
-                });
+                double gia = rs.getDouble("gia");
+DecimalFormat df = new DecimalFormat("#,###");
+
+model.addRow(new Object[]{
+        rs.getInt("id"),
+        icon,
+        rs.getString("ten_mon"),
+        df.format(gia) + " đ",
+        rs.getInt("so_luong"),
+        rs.getInt("id_loai")==1?"Đồ uống":"Ăn vặt"
+});
 
             }
 
@@ -410,7 +419,11 @@ add(splitPane,BorderLayout.CENTER);
         if(row==-1) return;
 
         txtTenMon.setText(model.getValueAt(row,2).toString());
-        txtGia.setText(model.getValueAt(row,3).toString());
+        String gia = model.getValueAt(row,3).toString();
+
+gia = gia.replace("đ","").replace(",","").trim();
+
+txtGia.setText(gia);
         txtSoLuong.setText(model.getValueAt(row,4).toString());
 
         if(model.getValueAt(row,5).toString().equals("Đồ uống")){

@@ -4,7 +4,10 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 import java.util.Date;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 
 public class OrderManager extends JFrame {
 
@@ -110,7 +113,13 @@ public class OrderManager extends JFrame {
                     int id = Integer.parseInt(table.getValueAt(row,0).toString());
                     String tenMon = table.getValueAt(row,2).toString();
                     int soLuong = Integer.parseInt(table.getValueAt(row,3).toString());
-                    int tongTien = Integer.parseInt(table.getValueAt(row,4).toString());
+                    String tienText = table.getValueAt(row,4).toString()
+        .replace("đ","")
+        .replace(",","")
+        .replace(".","")
+        .trim();
+
+int tongTien = Integer.parseInt(tienText);
 
                     new OrderDetail(id,tenMon,soLuong,tongTien).setVisible(true);
 
@@ -168,25 +177,54 @@ public class OrderManager extends JFrame {
     void themDonHang(){
 
     Date date = (Date) dateSpinner.getValue();
-    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
     String ngay = sdf.format(date);
     String tenMon = txtTenMon.getText();
 
     int soLuong = Integer.parseInt(txtSoLuong.getText());
-    int donGia = Integer.parseInt(txtTongTien.getText());
 
-    int tongTien = soLuong * donGia;
+String giaText = txtTongTien.getText()
+        .replace("đ","")
+        .replace(",","")
+        .replace(".","")
+        .trim();
+
+int donGia = Integer.parseInt(giaText);
+
+int tongTien = soLuong * donGia;
+
+try{
+
+Connection conn = database.DBConnection.getConnection();
+
+String sql = "INSERT INTO donhang(ngay,ten_mon,so_luong,tong_tien) VALUES (?,?,?,?)";
+
+PreparedStatement ps = conn.prepareStatement(sql);
+
+ps.setString(1, ngay);
+ps.setString(2, tenMon);
+ps.setInt(3, soLuong);
+ps.setInt(4, tongTien);
+
+ps.executeUpdate();
+
+}catch(Exception e){
+e.printStackTrace();
+}
+
 
     int id = model.getRowCount()+1;
 
-    model.addRow(new Object[]{
-            id,
-            ngay,
-            tenMon,
-            soLuong,
-            tongTien
-    });
+    DecimalFormat df = new DecimalFormat("#,###");
+
+model.addRow(new Object[]{
+        id,
+        ngay,
+        tenMon,
+        soLuong,
+        df.format(tongTien) + " đ"
+});
     }
 
     void xoaDonHang(){
