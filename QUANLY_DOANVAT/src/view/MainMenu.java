@@ -3,6 +3,7 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import FoodManager.FoodManager;
+import view.OrderManager;
 
 public class MainMenu extends JFrame {
 
@@ -37,6 +38,11 @@ public class MainMenu extends JFrame {
 
 });
         JButton btnOrder = new JButton("Quản lý đơn hàng");
+        btnOrder.addActionListener(e -> {
+
+    new OrderManager().setVisible(true);
+
+});
         JButton btnLogout = new JButton("Đăng xuất");
 
         styleMenu(btnHome);
@@ -92,8 +98,7 @@ btnFood.addActionListener(e -> {
 
         JLabel welcome = new JLabel("Chào mừng đến hệ thống quản lý",SwingConstants.CENTER);
         welcome.setFont(new Font("Segoe UI",Font.BOLD,24));
-
-        content.add(welcome,BorderLayout.CENTER);
+content.add(welcome,BorderLayout.CENTER);
 
         // ===== ADD =====
         add(sidebar,BorderLayout.WEST);
