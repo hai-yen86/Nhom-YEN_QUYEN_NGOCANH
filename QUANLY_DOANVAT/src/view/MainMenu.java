@@ -5,6 +5,7 @@ import java.awt.*;
 import FoodManager.FoodManager;
 
 import view.OrderManager;
+import view.ThongKeForm;
 
 public class MainMenu extends JFrame {
 
@@ -50,12 +51,19 @@ public class MainMenu extends JFrame {
     new UserManager().setVisible(true);
 
 });
+       JButton btnThongKe = new JButton("Thống kê");
+
+btnThongKe.addActionListener(e -> {
+    new ThongKeForm().setVisible(true);
+});
+
         JButton btnLogout = new JButton("Đăng xuất");
 
         styleMenu(btnHome);
         styleMenu(btnFood);
         styleMenu(btnUser);
         styleMenu(btnOrder);
+        styleMenu(btnThongKe);
         styleMenu(btnLogout);
         
         // sự kiện mở quản lý món ăn
@@ -69,6 +77,7 @@ btnFood.addActionListener(e -> {
         sidebar.add(btnFood);
         sidebar.add(btnUser);
         sidebar.add(btnOrder);
+        sidebar.add(btnThongKe);
         sidebar.add(btnLogout);
 
         // ===== HEADER =====
